@@ -1,4 +1,5 @@
 $primary: #d42c83;
+$secondary: #359ae8e1;
 
 ul {
     list-style: none;
@@ -7,6 +8,13 @@ ul {
 
 li {
     border: 1px solid #ccc;
+}
+
+i {
+    fill: #fff;
+    width: 1rem;
+    height: 1rem;
+    pointer-events: none;
 }
 
 input[type="checkbox"] {
@@ -31,7 +39,14 @@ input[type="checkbox"]:checked::after {
     background-color: $primary;
 }
 
+.btn.active {
+    background: $secondary !important;
+    border: none;
+}
+
 
 
 // Import all of Bootstrap's CSS
-@import "bootstrap/scss/bootstrap";
+@import "bootstrap/scss/bootstrap"; //bootstrap sass
+$bootstrap-icons-font-dir: "~bootstrap-icons/font/fonts"; //icon
+@import "~bootstrap-icons/font/bootstrap-icons.scss";  //icon
