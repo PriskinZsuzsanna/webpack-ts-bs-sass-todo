@@ -1,16 +1,11 @@
 // Import our custom CSS
 import { v4 as uuidv4 } from 'uuid';
 import '../scss/styles.scss'
+import Todo from './todomodel';
 
 // Import all of Bootstrap's JS
 import * as bootstrap from 'bootstrap'
 
-
-type Todo = {
-    text: string,
-    completed: boolean
-    id: string
-}
 
 let todos: Todo[] = load()
 let filtered: Todo[] = todos
@@ -18,6 +13,10 @@ let filtered: Todo[] = todos
 const form = document.querySelector('form') as HTMLFormElement
 const textInput = document.querySelector('#text-input') as HTMLInputElement
 const list = document.querySelector('ul') as HTMLUListElement
+const filterBtns = document.querySelectorAll('.filter-btn') as NodeList
+const filters = document.querySelector('.filters') as HTMLDivElement
+
+window.addEventListener('load', render)
 
 form.addEventListener('submit', (e) => {
     e.preventDefault()
@@ -40,6 +39,14 @@ form.addEventListener('submit', (e) => {
 
 })
 
+filters.addEventListener('click', (e:Event) => {
+    const { target } = e;
+    const dataId = (target as HTMLButtonElement).dataset.id
+    filter(dataId)
+    clear()
+    render()
+})
+
 function save(): void {
     localStorage.setItem('tsTodos', JSON.stringify(todos))
 }
@@ -53,16 +60,20 @@ function clear(): void {
 }
 
 function filter(state: string | undefined): Todo[] {
+    filtered = todos
+    filterBtns.forEach(btn => (btn as HTMLButtonElement).classList.remove('active'))
     if (state == 'active') {
         filtered = filtered.filter(item => item.completed == false)
+        document.querySelector('#active')?.classList.add('active')
     } else if (state == 'finished') {
         filtered = filtered.filter(item => item.completed == true)
-    } else {
+        document.querySelector('#finished')?.classList.add('active')
+    } else if (state == 'all') {
         filtered = todos
+        document.querySelector('#all')?.classList.add('active')
     }
     return filtered
 }
-
 
 function render(): void {
     filtered.forEach(item => {
@@ -121,6 +132,8 @@ function render(): void {
         del.addEventListener('click', (e: Event) => {
             const { target } = e
             todos = todos.filter(item => item.id != (target as HTMLButtonElement).id)
+            //filtered = todos
+            filter('all')
             save()
             clear()
             render()
@@ -137,7 +150,7 @@ function render(): void {
         saveBtn.addEventListener('click', (e: Event) => {
             item.text = input.value.trim()
             const { target } = e
-            filter('all')
+            //filter('all')
             save()
             clear()
             render()
@@ -146,41 +159,12 @@ function render(): void {
 
         })
 
-        /*input.addEventListener('change', (e:Event) => {
-            //item.text = input.value.trim()
-            const {target} = e
-            todos.map(item => {
-                if(item.id == (target as HTMLButtonElement).id){
-                    item.text = input.value.trim()
-                }
-            })
-            save()
-            clear()
-            render()
-        })*/
-
-        const filterBtns = document.querySelectorAll('.filter-btn') as NodeList
-
-        filterBtns.forEach(btn => {
-            btn.addEventListener('click', (e: Event) => {
-                filtered = todos;
-                const { target } = e;
-                //(target as HTMLButtonElement).parentElement?.childNodes.forEach((item as HTMLButtonElement) => (item as HTMLButtonElement).classList.remove('active'));
-                (target as HTMLButtonElement).classList.add('active');
-                const dataId = (target as HTMLButtonElement).dataset.id
-
-                filter(dataId)
-                save()
-                clear()
-                render()
-            })
-        })
-
+        
     })
 
+    
 }
 
-render()
 
 
 
